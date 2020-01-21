@@ -1,6 +1,9 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
 
 jobs:
   build:
@@ -10,6 +13,23 @@ jobs:
     steps:
     - name: Cloning the repo
       uses: actions/checkout@v1
-      
-    - name: Try get env data
-      run: echo ${{secrets.ENV}}
+    
+    - name: Run a multi-line script
+      run: |
+        ls -alh
+        pwd
+ 
+    - name: Composer install
+      uses: docker://composer:1.9.1
+      with:
+        args: install
+   
+    - name: PHPUnit testing
+      uses: docker://php:7.3
+      with:
+        args: php vendor/bin/phpunit
+        
+    - name: Run a multi-line script
+      run: |
+        ls -alh
+        pwd
