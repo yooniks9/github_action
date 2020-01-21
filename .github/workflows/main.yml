@@ -18,6 +18,7 @@ jobs:
       run: |
         ls -alh
         pwd
+        cp .env.example .env
  
     - name: Composer install
       uses: docker://composer:1.9.1
@@ -27,7 +28,9 @@ jobs:
     - name: PHPUnit testing
       uses: docker://php:7.3
       with:
-        args: php vendor/bin/phpunit
+        args: |
+          php artisan key:generate
+          php vendor/bin/phpunit
         
     - name: Run a multi-line script
       run: |
