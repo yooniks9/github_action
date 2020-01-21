@@ -1,0 +1,15 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cloning the repo
+      uses: actions/checkout@v1
+      
+    - name: Try get env data
+      run: echo ${{secrets.ENV}}
