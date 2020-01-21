@@ -30,11 +30,13 @@ jobs:
       with:
         args: |
           php vendor/bin/phpunit
-    - name: Publish to npm
-      uses: pascalgn/npm-publish-action@1.1.0
-      with: |
-        npm install
-        npm run production
+     
+    - name: node install
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - run: npm install
+    - run: npm run production
 
     - name: Run a multi-line script
       run: |
