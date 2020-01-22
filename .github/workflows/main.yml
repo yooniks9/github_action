@@ -23,9 +23,7 @@ jobs:
     - name: Composer install
       uses: docker://composer:1.9.1
       with:
-        args: |
-          composer install
-          composer dump-autoload
+        args: install
 
     - name: PHPUnit testing
       uses: docker://php:7.3
