@@ -1,78 +1,90 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+## Github Action
+https://medium.com/@yooniks9/github-action-simple-cicd-beginner-93b80e335255
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+### Preparation
+#### 1.connect to your VPS host with SSH (sudo permission is required)
+```
+ssh ubuntu@254.254.254.254
+```
 
-## About Laravel
+#### 2.create a user github-runner
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+sudo useradd github-runner
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### 3.create a ssh key
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+ssh-keygen -t rsa -b 2048 -C github-runner
+```
 
-## Learning Laravel
+#### 4.create authorization key access for github-runner
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Let’s switch to user github-runner
+- Change directory to ~/.ssh
+- append github-runner public key to authorized_keys
+- Change authorized_keys file permission only user(RW)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+sudo su github-runner
+cd ~/.ssh
+cat id_rsa.pub > authorized_keys
+chmod 600 authorized_keys
+```
 
-## Laravel Sponsors
+#### 5.let’s print out the SSH_PRIVATE_KEY, we will need it for github secrets
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```
+cat /home/github-runner/.ssh/id_rsa
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAy0aya1Zye2cQ4j9b70hzj8eF+KQl068WjSFxp9Kz/t9az6Mu
+zVOL1mZ246c24GttRxL/y8XgW0PBssxFdssa4r4fWiTriDYHnJrLVIzNJymTITws
+3Dkb99NtoGUYANKgI18Q+Ql3W25QiABPeJUhNAH3+m7qowg1ZI/g2g0hArktp+QR
+0U+VP9h+10p3Juajl/+vqBL3sAqml0JtrC+1KWbf7OAcAhItcOJ0PQ+b4/mFGUxN
+N/KrwJijhgzD1C9V16Wg8ZbyvCJi3ctfTi5zbhQ3h6N8UwDahpecAHafxM1KJsF3
+3iLqRdJRmlKGFXFS8iHWm3NkjWtRzKLVCVfKwQIDAQABAoIBAQC6Ei7D3k/Q8dkc
+oM6wy+ssU4EoxmjxyjWkXlbBPjgRN7bSlhcDUFSSnxx46tlquCtBgfywNKNYJz+p
+QR7czLIBl/Lu+xi2iG6TRYaWEITCMmZBZ+nQdF5LjjetOJyuNB7uAdlxfN7KzMHe
+nBoi0K+iAaNSlDEnpx3ovWMfdiEfcWzYrTjEBYlXdVpZ3oJG84w5nXjDdWLZmk5p
+c5j/UBhnp0od0wUkiPDiQS6OV84Wu7A5D/SrdGptpN2Ici4Sb9TJMHtZKWoMOS+7
+uvQuu/zkvCdW8MTqJsQ9P+atmABSs5V6nmvJWKk5YHWMHPp4QIQ6TX6sYxmixrPr
+RJ440XBZAoGBAOZnk0DJSFe25Mchi4CvNp7qljvXMHICBNr1/+WREp/3O9YfXiJc
+k/GAjv0DwJ35WamntlEJOvWBbFEsUEZZAaTZbZP5Ul5vWKO+iWV8gCTPqEz3PGO2
+NlbSxWMNKvFUXhEA8iSLn6T5y/LQOyo2eK0WTSxkh4MWJoczUhTlmwnPAoGBAOHb
+n1JT3ejFpfMh2h6mxkn5glRg5CJJz6afzxaxM38Lioav5VL7TRoedMPO6apXhTUm
+OSUpDfBk0H3AsTjZvnYSwbbHYKdKlLHYvZongXM0SZJ0grt3/8UJMZlCOw5Zi24J
+Zek17764hSIP652icnZgWd8HMi5w/oWUFNJYvVZvAoGAasfT2fGvIl+z9YnZYmFR
+uiLUT5VycVP4NhZOa3FppVNqmtjcwqYPNpyzKBWmHlCiulrsxu+1MHSz44bbCU9U
+0Lan7y1cfEG0Xeb/PFaP+P94a3sltLyMwH5cVoSSw1erZMwAbOl8qnPOjpDs6qpm
+ESnFyG4q05jfcEdboi2rRccCgYEAtd3HON/XfKxKqLDFlpDscny7eX5btVCCKMXe
+V4Nw2AhPD41rt5orx7BmjZV7inLXDKkussGQO9ayG9Ch5AlR2HnaCngZWBwyB9Nj
+OVI+Zqnf5FJ1Qsep6NsyWRp/u1pXb8+ZhGSuHIEwkvEG5PP9/1wugeyld8f860sG
+SSqzq3kCgYA6fyS357OMOTvlWUP42GdiDJCfRjVmRARv38NOUdoO1KBqDSolG+eW
+MimBVXAkvxqFh3cw/Oev8426YsWFKTJpvMPi6c+LvWcqKb3THTJ1QtmPxyySuPDU
+3Y9PH/RC0vb944ZglRfFWnMYxP+qN2YifxZEBI4zC7MuIB3EICNxQA==
+-----END RSA PRIVATE KEY-----
+```
 
-## Contributing
+#### 6. Environment setup
+- exit from github-runner’s workspace
+- add github-runner to www-data groups
+- create a folder /var/www/github_action
+- set ownership : github-runner, group: www-data
+- set permission user & groups (read/write/execute)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+exit
+sudo usermod -aG www-data github-runner
+sudo mkdir /var/www/github_action
+sudo chown github-runner:www-data /var/www/github_action
+sudo chmod 775 /var/www/github_action
+```
 
-## Code of Conduct
+#### Create Secret on Github
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- SSH_PORT = 22
+- SSH_PRIVATE_KEY = is the key you generate from VPS-Step5
+- SSH_SERVER = IP address of your VPS server
+- SSH_USER = github_runner
