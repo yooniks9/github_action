@@ -14,49 +14,49 @@ jobs:
     - name: Cloning the repo
       uses: actions/checkout@v1
 
-    - name: Run a multi-line script
-      run: |
-        ls -alh
-        pwd
-        cp .env.example .env
+    # - name: Run a multi-line script
+    #   run: |
+    #     ls -alh
+    #     pwd
+    #     cp .env.example .env
 
-    - name: Composer install
-      uses: docker://composer:1.9.1
-      with:
-        args: install
+    # - name: Composer install
+    #   uses: docker://composer:1.9.1
+    #   with:
+    #     args: install
 
-    - name: PHPUnit testing
-      uses: docker://php:7.3
-      with:
-        args: |
-          php vendor/bin/phpunit
+    # - name: PHPUnit testing
+    #   uses: docker://php:7.3
+    #   with:
+    #     args: |
+    #       php vendor/bin/phpunit
 
-    - name: node install
-      uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
+    # - name: node install
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: '10.x'
 
-    - name: Build & Set files permission
-      run: |
-        npm install
-        npm run production
-        sudo find . -type f -exec chmod 664 {} +
-        sudo find . -type d -exec chmod 775 {} +
-        sudo chmod +x artisan
-        sudo chown -R www-data:www-data .
-        ls -alh
+    # - name: Build & Set files permission
+    #   run: |
+    #     npm install
+    #     npm run production
+    #     sudo find . -type f -exec chmod 664 {} +
+    #     sudo find . -type d -exec chmod 775 {} +
+    #     sudo chmod +x artisan
+    #     sudo chown -R www-data:www-data .
+    #     ls -alh
 
-    - name: Deploy to server without git & .env
-      id: deploy
-      uses: Pendect/action-rsyncer@v1.1.0
-      env:
-        DEPLOY_KEY: ${{secrets.SSH_PRIVATE_KEY}}
-      with:
-        flags: '-avz --exclude=".git*" --exclude .env'
-        options: ''
-        ssh_options: '-p ${{secrets.SSH_PORT}}'
-        src: '.'
-        dest: '${{secrets.SSH_USER}}@${{secrets.SSH_SERVER}}:/var/www/github_action/'
+    # - name: Deploy to server without git & .env
+    #   id: deploy
+    #   uses: Pendect/action-rsyncer@v1.1.0
+    #   env:
+    #     DEPLOY_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+    #   with:
+    #     flags: '-avz --exclude=".git*" --exclude .env'
+    #     options: ''
+    #     ssh_options: '-p ${{secrets.SSH_PORT}}'
+    #     src: '.'
+    #     dest: '${{secrets.SSH_USER}}@${{secrets.SSH_SERVER}}:/var/www/github_action/'
 
     - name: Run playbook
       uses: dawidd6/action-ansible-playbook@v2
@@ -67,6 +67,9 @@ jobs:
         inventory: |
           [webservers]
           ${{secrets.SSH_SERVER}}
+
+          [webservers:vars]
+          ansible_python_interpreter=/usr/bin/python3
         vault_password: ${{secrets.SSH_USER_PASS}}
         options: |
           --verbose
