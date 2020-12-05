@@ -70,3 +70,4 @@ jobs:
         vault_password: ${{secrets.SSH_USER_PASS}}
         options: |
           --verbose
+          --user ${{secrets.SSH_USER}}
