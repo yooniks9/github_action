@@ -1,0 +1,17 @@
+
+---
+- hosts: webservers
+  gather_facts: False
+  become: True
+  tasks:
+    - name: Set permission & clear cache
+      shell: |
+        touch /var/www/github_action/ok.txt
+        find /var/www/github_action -type f -exec chmod 664 {} +
+        find /var/www/github_action -type d -exec chmod 775 {} +
+        chown -R www-data:www-data /var/www/github_action
+        chmod +x /var/www/github_action/artisan
+        /usr/bin/php /var/www/github_action/artisan cache:clear
+        /usr/bin/php /var/www/github_action/artisan route:clear
+        /usr/bin/php /var/www/github_action/artisan config:clear
+        /usr/bin/php /var/www/github_action/artisan view:clear
