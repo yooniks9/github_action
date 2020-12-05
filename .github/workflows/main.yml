@@ -31,14 +31,20 @@ jobs:
     #     args: |
     #       php vendor/bin/phpunit
 
-    - name: node install
-      uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-      run: |
-        npm install
-        npm run production
-        ls -alh
+    # - name: node install
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: '10.x'
+
+    # - name: Build & Set files permission
+    #   run: |
+    #     npm install
+    #     npm run production
+    #     sudo find . -type f -exec chmod 664 {} +
+    #     sudo find . -type d -exec chmod 775 {} +
+    #     sudo chmod +x artisan
+    #     sudo chown -R www-data:www-data .
+    #     ls -alh
 
     # - name: Deploy to server without git & .env
     #   id: deploy
