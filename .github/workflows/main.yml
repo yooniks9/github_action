@@ -57,3 +57,16 @@ jobs:
         ssh_options: '-p ${{secrets.SSH_PORT}}'
         src: '.'
         dest: '${{secrets.SSH_USER}}@${{secrets.SSH_SERVER}}:/var/www/github_action/'
+
+    - name: Run playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        playbook: deploy.yml
+        directory: ./ansible/
+        key: ${{secrets.SSH_PRIVATE_KEY}}
+        inventory: |
+          [webservers]
+          ${{secrets.SSH_SERVER}}
+        vault_password: ${{secrets.SSH_USER_PASS}}
+        options: |
+          --verbose

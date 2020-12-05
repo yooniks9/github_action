@@ -1,0 +1,17 @@
+
+---
+- hosts: webservers
+  gather_facts: False
+  become: True
+  tasks:
+    - name: Set permission & clear cache
+      shell: |
+        touch /var/www/redat/ok.txt
+        find /var/www/redat -type f -exec chmod 664 {} +
+        find /var/www/redat -type d -exec chmod 775 {} +
+        chown -R www-data:www-data /var/www/redat
+        chmod +x /var/www/redat/artisan
+        /usr/bin/php /var/www/redat/artisan cache:clear
+        /usr/bin/php /var/www/redat/artisan route:clear
+        /usr/bin/php /var/www/redat/artisan config:clear
+        /usr/bin/php /var/www/redat/artisan view:clear
