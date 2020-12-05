@@ -74,3 +74,4 @@ jobs:
         options: |
           --verbose
           --user ${{secrets.SSH_USER}}
+          --extra-vars ansible_sudo_pass=${{secrets.SSH_USER_PASS}}
