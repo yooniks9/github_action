@@ -71,7 +71,7 @@ jobs:
         options: ''
         ssh_options: '-p ${{secrets.SSH_PORT}}'
         src: '.'
-        dest: '${{secrets.SSH_USER}}@${{secrets.SSH_SERVER}}:/var/www/www.familyfirst.net.tw/'
+        dest: '${{secrets.SSH_USER}}@${{secrets.SSH_SERVER}}:/var/www/github_action/'
 
     - name: End - Set remove file permission to www-data, clear laravel cache
       uses: dawidd6/action-ansible-playbook@v2
