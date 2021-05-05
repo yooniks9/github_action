@@ -1,0 +1,8 @@
+---
+- hosts: webservers
+  gather_facts: False
+  become: True
+  tasks:
+    - name: Set permission to github-runner
+      shell: |
+        chown -R github-runner:www-data /var/www/github_action
